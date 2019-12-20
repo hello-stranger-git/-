@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>摇摆的砖块</title>
+		<link rel="stylesheet" href="css/bird.css" />
+	</head>
+
+	<body>
+		<div class="game" id="game">
+			<div class="bird" id="bird"></div>
+		</div>
+	</body>
+
+</html>
+<script>
+	var game = document.getElementById('game');
+	var birdEl = document.getElementById('bird');
+	var bird = {
+		speedX: 5,
+		speedY: 5,
+		x: birdEl.offsetLeft,
+		y: birdEl.offsetTop
+	}
+	var running = true;
+	setInterval(function() {
+		if(running) {
+			bird.speedY += 0.1;
+			bird.y += bird.speedY;
+			if(bird.y < 0) {
+				bird.y = 0;
+				running = false;
+			}
+			if(bird.y > game.offsetHeight - birdEl.offsetHeight) {
+				bird.y = game.offsetHeight - birdEl.offsetHeight;
+				running = false;
+			}
+		}
+		birdEl.style.top = bird.y + 'px';
+	}, 30)
+
+	document.onclick = function() {
+		bird.speedY -= 2;
+	}
+
+	//创建管道
+	function creatPip(position) {
+		var pipe = {};
+		pipe.x = position;
+		pipe.uHeight = 200 + parseInt(Math.random() * 100);
+		pipe.dHeight = game.offsetHeight - pipe.uHeight - 200;
+		pipe.dTop = pipe.uHeight + 200;
+		//上管道 
+		var uPipe = document.createElement('div');
+		uPipe.style.width = '50px';
+		uPipe.style.height = pipe.uHeight + 'px';
+		uPipe.style.backgroundColor = '#336699';
+		uPipe.style.position = 'absolute';
+		uPipe.style.top = '0px';
+		uPipe.style.left = pipe.x + 'px';
+		game.appendChild(uPipe);
+
+		//下管道
+		var dPipe = document.createElement('div');
+		dPipe.style.width = '50px';
+		dPipe.style.height = pipe.dHeight + 'px';
+		dPipe.style.backgroundColor = '#336699';
+		dPipe.style.position = 'absolute';
+		dPipe.style.top = pipe.dTop + 'px';
+		dPipe.style.left = pipe.x + 'px';
+		game.appendChild(dPipe);
+
+		//让管道运动
+		setInterval(function() {
+			if(running) {
+				pipe.x -= 2;
+				uPipe.style.left = pipe.x + 'px';
+				dPipe.style.left = pipe.x + 'px';
+				if(pipe.x < -50) {
+					pipe.x = game.offsetWidth + 200;
+				}
+				
+				//判断是否碰撞管道
+				var uCheck=bird.x+20>pipe.x&&bird.x<pipe.x+50&&bird.y<pipe.uHeight;
+				var dCheck = bird.x+20>pipe.x&&bird.x<pipe.x+50&&bird.y>pipe.uHeight+180;
+				if(uCheck||dCheck){
+					running=false;
+				}
+			}
+		}, 30)
+
+	}
+	creatPip(400);
+	creatPip(600);
+	creatPip(800);
+	creatPip(1000);
+</script>
